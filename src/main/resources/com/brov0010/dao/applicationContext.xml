@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- 
+		The following database-specific beans will need to be referenced here: 
+	
+			data.source 				= javax.sql.DataSource
+			data.hibernate.properties	= java.util.Propeprties
+			 
+				<util:properties id="pacelabs.data.hibernate.properties">
+					<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop>
+					<prop key="hibernate.show_sql">false</prop>
+				</util:properties>
+				
+				Also:
+				<bean id="appConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+					<property name="location">
+						<value>classpath:*hibernate*.properties</value>
+					</property> 
+				</bean>
+			
+			In order for hibernate to find the packages containing the @Entity information to bind, you MUST start
+			the domain object in the com.brov0010.* package. Otherwise, you will need to override the sessionFactory object.
+	-->
+	
+	<bean id="sessionFactory" 
+		  class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" 
+		  scope="singleton"
+		  depends-on="data.source,data.hibernate.properties"
+		  lazy-init="true"
+		>
+		<property name="dataSource" ref="data.source"/>
+		<property name="hibernateProperties" ref="data.hibernate.properties"/>
+		<property name="packagesToScan">
+			<list>
+				<!-- Look at a better way to scan or inject a base package wildcard -->
+				<value>com.brov0010.**.*</value>
+			</list>
+		</property>
+	</bean>
+	
+</beans>
