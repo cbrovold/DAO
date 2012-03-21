@@ -6,6 +6,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,18 +15,27 @@ import com.brov0010.dao.model.Driver;
 import com.brov0010.dao.model.Passenger;
 import com.brov0010.dao.model.Person;
 import com.brov0010.dao.model.dao.IBusDao;
+import com.brov0010.dao.model.dao.IPassengerDao;
 import com.brov0010.dao.model.dao.IPersonDao;
 import com.brov0010.dao.util.DaoException;
 import com.brov0010.testing.AbstractTransactionalTestHelper;
 
+/**
+ * By extending the {@link AbstractTransactionalTestHelper}, the data is automatically rolled back. However,
+ * 	since the data.hibernate.properties[hibernate.hbm2ddl.auto] is set to just create, the schema will be persisted
+ * 	so you can see how hibernate generates the schema. 
+ * 
+ * @author chadbrovold
+ *
+ */
 public class GeneralTest extends AbstractTransactionalTestHelper {
 
 	@Autowired
 	IBusDao busDao;
 	@Autowired
 	IPersonDao personDao;
-	
-	
+	@Autowired
+	IPassengerDao passengerDao;
 	
 	private static final List<Person> people = new ArrayList<Person>();
 	static {
@@ -40,9 +50,26 @@ public class GeneralTest extends AbstractTransactionalTestHelper {
 		people.add(new Passenger("Micheal", true));
 		people.add(new Passenger("Bill", false));
 	};
+	// Mostly creating the separate arrays for test helpers
+	private static List<Passenger> passengers = new ArrayList<Passenger>();
+	private static List<Driver> drivers = new ArrayList<Driver>();
+
+	@BeforeClass
+	public static void init() {
+		
+		for(Person p : people) {
+			
+			if(p instanceof Passenger) {
+				passengers.add((Passenger)p);
+			} else if (p instanceof Driver) {
+				drivers.add((Driver)p);
+			}
+		}
+	}
 	
 	@Before
 	public void setUp() throws DaoException{
+		
 		for(Person p : people) {
 			personDao.create(p);
 		}
@@ -53,7 +80,7 @@ public class GeneralTest extends AbstractTransactionalTestHelper {
 
 	@Test
 	public void test_getPeople() {
-		Assert.assertEquals(8, personDao.getAll().size());
+		Assert.assertEquals(people.size(), personDao.getAll().size());
 	}
 	
 	@Test
@@ -61,5 +88,35 @@ public class GeneralTest extends AbstractTransactionalTestHelper {
 
 		Assert.assertEquals(2, busDao.getAll().size());
 	}
-	
+
+	@Test
+	public void test_getDrivers() {
+		
+		Assert.assertEquals(drivers.size(), personDao.getAllByType(Driver.class).size());
+	}
+
+	@Test
+	public void test_getPassengers() {
+		
+		Assert.assertEquals(passengers.size(), personDao.getAllByType(Passenger.class).size());
+	}
+
+	@Test
+	public void test_findPassengersWithPass() {
+
+		// Just dynamically getting the number of Passenger(s) with/without a pass
+		int noPass = 0;
+		int pass = 0;
+		for(Passenger p : passengers) {
+			
+			if(p.isHasPass()) {
+				pass++;
+			} else {
+				noPass++;
+			}
+		}
+
+		Assert.assertEquals(pass, passengerDao.findAllByPass(true).size());
+		Assert.assertEquals(noPass, passengerDao.findAllByPass(false).size());
+	}
 }

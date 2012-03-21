@@ -32,4 +32,13 @@ public class Driver extends Person {
 	public String getLicense() {
 		return license;
 	}
+
+	@Override
+	public Bus getBus() {
+		return bus;
+	}
+	@Override
+	public void setBus(Bus bus) {
+		this.bus = bus;
+	}
 }

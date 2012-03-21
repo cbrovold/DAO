@@ -31,4 +31,8 @@
 	<bean id="personDao" class="com.brov0010.dao.model.dao.PersonDao">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
+
+	<bean id="passengerDao" class="com.brov0010.dao.model.dao.PassengerDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
 </beans>

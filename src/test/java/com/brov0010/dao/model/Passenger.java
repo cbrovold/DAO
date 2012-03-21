@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,7 +22,7 @@ public class Passenger extends Person {
 	
 	@Column(name = "has_pass")
 	private boolean hasPass = false; /* sets default to false */
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "bus_id")
 	private Bus bus;
 
@@ -31,6 +31,15 @@ public class Passenger extends Person {
 	}
 	public boolean isHasPass() {
 		return hasPass;
+	}
+
+	@Override
+	public Bus getBus() {
+		return bus;
+	}
+	@Override
+	public void setBus(Bus bus) {
+		this.bus = bus;
 	}
 
 }

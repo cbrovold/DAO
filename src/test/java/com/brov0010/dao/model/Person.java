@@ -18,7 +18,6 @@ public abstract class Person extends AbstractEntity {
 	
 	@Column(name = "person")
 	private String name;
-	private Bus bus;
 
 	public void setName(String name) {
 		this.name = name;
@@ -27,11 +26,6 @@ public abstract class Person extends AbstractEntity {
 		return name;
 	}
 
-	public void setBus(Bus bus) {
-		this.bus = bus;
-	}
-	public Bus getBus() {
-		return bus;
-	}
-
+	public abstract Bus getBus();
+	public abstract void setBus(Bus bus);
 }
